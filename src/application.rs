@@ -167,13 +167,13 @@ impl<P: Program> Application<P> {
     }
 
     /// Runs the [`Application`] with a closure that creates the initial state.
-    pub fn run_with<I>(self, initialize: I) -> Result
+    pub fn run_with<I>(self, winit_settings: Option<iced_winit::Settings>, initialize: I) -> Result
     where
         Self: 'static,
         I: FnOnce() -> (P::State, Task<P::Message>) + 'static,
     {
         self.raw
-            .run_with(self.settings, Some(self.window), initialize)
+            .run_with(self.settings, Some(self.window), winit_settings, initialize)
     }
 
     /// Sets the [`Settings`] that will be used to run the [`Application`].

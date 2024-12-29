@@ -77,7 +77,7 @@ pub trait Program: Sized {
         Self: 'static,
         Self::State: Default,
     {
-        self.run_with(settings, window_settings, || {
+        self.run_with(settings, window_settings, None,  || {
             (Self::State::default(), Task::none())
         })
     }
@@ -87,6 +87,7 @@ pub trait Program: Sized {
         self,
         settings: Settings,
         window_settings: Option<window::Settings>,
+        winit_settings: Option<iced_winit::Settings>,
         initialize: I,
     ) -> Result
     where
@@ -177,14 +178,12 @@ pub trait Program: Sized {
             Instance<Self, I>,
             <Self::Renderer as compositor::Default>::Compositor,
         >(
-            Settings {
-                id: settings.id,
-                fonts: settings.fonts,
-                default_font: settings.default_font,
-                default_text_size: settings.default_text_size,
-                antialiasing: settings.antialiasing,
-            }
-            .into(),
+            iced_winit::Settings { 
+                id: settings.id, 
+                fonts: settings.fonts, 
+                #[cfg(target_os = "android")]
+                android_app: winit_settings.and_then(|w| w.android_app) 
+            },
             renderer_settings,
             window_settings,
             (self, initialize),

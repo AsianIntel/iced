@@ -120,7 +120,7 @@ impl<P: Program> Daemon<P> {
         Self: 'static,
         I: FnOnce() -> (P::State, Task<P::Message>) + 'static,
     {
-        self.raw.run_with(self.settings, None, initialize)
+        self.raw.run_with(self.settings, None, None, initialize)
     }
 
     /// Sets the [`Settings`] that will be used to run the [`Daemon`].

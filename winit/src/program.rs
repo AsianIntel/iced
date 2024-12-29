@@ -157,8 +157,15 @@ where
     let mut debug = Debug::new();
     debug.startup_started();
 
-    let event_loop = EventLoop::with_user_event()
-        .build()
+    let mut event_loop = EventLoop::with_user_event();
+
+    #[cfg(target_os = "android")]
+    {
+        use winit::platform::android::EventLoopBuilderExtAndroid;
+        let _ = event_loop.with_android_app(settings.android_app.unwrap());
+    }
+
+    let event_loop = event_loop.build()
         .expect("Create event loop");
 
     let (proxy, worker) = Proxy::new(event_loop.create_proxy());
