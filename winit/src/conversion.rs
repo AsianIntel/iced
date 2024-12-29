@@ -197,8 +197,15 @@ pub fn window_event(
             let key = {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    use winit::platform::modifier_supplement::KeyEventExtModifierSupplement;
-                    event.key_without_modifiers()
+                    #[cfg(not(target_os = "android"))]
+                    {
+                        use winit::platform::modifier_supplement::KeyEventExtModifierSupplement;
+                        event.key_without_modifiers()
+                    }
+                    #[cfg(target_os = "android")]
+                    {
+                        event.logical_key.clone()
+                    }
                 }
 
                 #[cfg(target_arch = "wasm32")]
@@ -211,10 +218,17 @@ pub fn window_event(
             let text = {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    use crate::core::SmolStr;
-                    use winit::platform::modifier_supplement::KeyEventExtModifierSupplement;
+                    #[cfg(not(target_os = "android"))]
+                    {
+                        use crate::core::SmolStr;
+                        use winit::platform::modifier_supplement::KeyEventExtModifierSupplement;
 
-                    event.text_with_all_modifiers().map(SmolStr::new)
+                        event.text_with_all_modifiers().map(SmolStr::new)
+                    }
+                    #[cfg(target_os = "android")]
+                    {
+                        event.text
+                    }
                 }
 
                 #[cfg(target_arch = "wasm32")]
